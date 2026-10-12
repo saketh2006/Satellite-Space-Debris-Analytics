@@ -1,0 +1,6 @@
+__pycache__/
+*.py[cod]
+*$py.class
+space_decay.csv
+*.docx
+.ipynb_checkpoints/
