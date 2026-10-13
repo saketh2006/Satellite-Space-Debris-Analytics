@@ -133,7 +133,7 @@ def create_quadrant_inference_box(id_title, key_finding, calculated_evidence, co
         children=[
             # Header Title
             html.Div(
-                f"• {id_title.upper()} INFERENCE: DATA-DRIVEN FINDING & EVIDENCE",
+                f"• {id_title.upper()} — WHAT THIS CHART MEANS (EASY EXPLANATION)",
                 style={
                     'color': '#1D4ED8',
                     'fontSize': '13.5px',
@@ -151,24 +151,24 @@ def create_quadrant_inference_box(id_title, key_finding, calculated_evidence, co
                     'gap': '18px 32px'
                 },
                 children=[
-                    # Quadrant 1: KEY FINDING
+                    # Quadrant 1: MAIN TAKEAWAY
                     html.Div([
-                        html.Div("KEY FINDING", style={'color': '#0284C7', 'fontSize': '12px', 'fontWeight': '800', 'letterSpacing': '0.5px', 'marginBottom': '4px'}),
+                        html.Div("💡 MAIN TAKEAWAY (WHAT THIS SHOWS)", style={'color': '#0284C7', 'fontSize': '12px', 'fontWeight': '800', 'letterSpacing': '0.5px', 'marginBottom': '4px'}),
                         html.Div(key_finding, style={'color': '#334155', 'fontSize': '13px', 'lineHeight': '1.55'})
                     ]),
-                    # Quadrant 2: CALCULATED EVIDENCE
+                    # Quadrant 2: THE NUMBERS & PROOF
                     html.Div([
-                        html.Div("CALCULATED EVIDENCE", style={'color': '#059669', 'fontSize': '12px', 'fontWeight': '800', 'letterSpacing': '0.5px', 'marginBottom': '4px'}),
+                        html.Div("📊 THE NUMBERS & PROOF", style={'color': '#059669', 'fontSize': '12px', 'fontWeight': '800', 'letterSpacing': '0.5px', 'marginBottom': '4px'}),
                         html.Div(calculated_evidence, style={'color': '#334155', 'fontSize': '13px', 'lineHeight': '1.55'})
                     ]),
-                    # Quadrant 3: CONTEXTUAL INTERPRETATION
+                    # Quadrant 3: WHY IT MATTERS
                     html.Div([
-                        html.Div("CONTEXTUAL INTERPRETATION", style={'color': '#6366F1', 'fontSize': '12px', 'fontWeight': '800', 'letterSpacing': '0.5px', 'marginBottom': '4px'}),
+                        html.Div("🌍 WHY IT MATTERS (REAL-WORLD IMPACT)", style={'color': '#6366F1', 'fontSize': '12px', 'fontWeight': '800', 'letterSpacing': '0.5px', 'marginBottom': '4px'}),
                         html.Div(contextual_interpretation, style={'color': '#334155', 'fontSize': '13px', 'lineHeight': '1.55'})
                     ]),
-                    # Quadrant 4: ANALYTICAL CAUTION / LIMITATION
+                    # Quadrant 4: IMPORTANT NOTE
                     html.Div([
-                        html.Div("ANALYTICAL CAUTION / LIMITATION", style={'color': '#D97706', 'fontSize': '12px', 'fontWeight': '800', 'letterSpacing': '0.5px', 'marginBottom': '4px'}),
+                        html.Div("⚠️ IMPORTANT NOTE / WHAT IS MISSING", style={'color': '#D97706', 'fontSize': '12px', 'fontWeight': '800', 'letterSpacing': '0.5px', 'marginBottom': '4px'}),
                         html.Div(analytical_caution, style={'color': '#334155', 'fontSize': '13px', 'lineHeight': '1.55'})
                     ])
                 ]
@@ -201,13 +201,13 @@ def create_m1_bar(data):
         counts, x='OBJECT_TYPE', y='COUNT',
         color='OBJECT_TYPE', color_discrete_map=TYPE_COLORS,
         text=counts.apply(lambda r: f"{r['COUNT']:,} ({r['PERCENT']:.1f}%)", axis=1),
-        labels={'OBJECT_TYPE': 'Object Classification', 'COUNT': 'Tracked Objects Count'}
+        labels={'OBJECT_TYPE': 'Object Type', 'COUNT': 'Number of Space Objects'}
     )
     fig.update_traces(textposition='outside', marker_line_color='#CBD5E1', marker_line_width=1)
     fig.update_layout(
         **LIGHT_THEME_LAYOUT, height=460,
         margin=dict(t=70, b=50, l=60, r=40),
-        title=dict(text="<b>M1: Object Count by Classification Type</b><br><span style='color:#64748B;font-size:12px;'>Catalog Proportions: Debris Dominance vs. Operational Payloads vs. Discarded Stages</span>", x=0.02, y=0.96, xanchor='left'),
+        title=dict(text="<b>M1: What Kind of Objects Are in Space?</b><br><span style='color:#64748B;font-size:12px;'>Dead Space Junk vs. Working Satellites vs. Old Rocket Parts</span>", x=0.02, y=0.96, xanchor='left'),
         showlegend=False,
         yaxis=dict(gridcolor="#F1F5F9", range=[0, max(10, counts['COUNT'].max() * 1.2)]),
         xaxis=dict(gridcolor="#F1F5F9")
@@ -217,7 +217,7 @@ def create_m1_bar(data):
 def create_m2_area(data):
     valid = data[(data['LAUNCH_YEAR'] >= 1957) & (data['LAUNCH_YEAR'] <= 2024)].copy()
     if len(valid) == 0:
-        return empty_figure("M2: Retained Objects by Launch Year — Stacked Area Profile")
+        return empty_figure("M2: History of Space Objects by Launch Year")
     yearly = valid.groupby(['LAUNCH_YEAR', 'OBJECT_TYPE']).size().unstack(fill_value=0).reset_index()
     
     fig = go.Figure()
@@ -231,31 +231,31 @@ def create_m2_area(data):
             ))
             
     if valid['LAUNCH_YEAR'].min() <= 2007 <= valid['LAUNCH_YEAR'].max():
-        fig.add_annotation(x=2007, y=650, text="2007 Fengyun-1C<br>ASAT Spike",
+        fig.add_annotation(x=2007, y=650, text="2007 Satellite Destroyed<br>in Missile Test (800+ fragments)",
                            showarrow=True, arrowhead=2, arrowcolor="#EF4444", ax=-50, ay=-50,
                            font=dict(color="#B91C1C", size=10), bgcolor="#FEF2F2", bordercolor="#F87171")
     if valid['LAUNCH_YEAR'].min() <= 2009 <= valid['LAUNCH_YEAR'].max():
-        fig.add_annotation(x=2009, y=520, text="2009 Cosmos-Iridium<br>Collision",
+        fig.add_annotation(x=2009, y=520, text="2009 Satellite Crash<br>(Cosmos & Iridium, 500+ fragments)",
                            showarrow=True, arrowhead=2, arrowcolor="#F59E0B", ax=-60, ay=-65,
                            font=dict(color="#B45309", size=10), bgcolor="#FFFBEB", bordercolor="#FCD34D")
     if valid['LAUNCH_YEAR'].min() <= 2020 <= valid['LAUNCH_YEAR'].max():
-        fig.add_annotation(x=2020, y=1050, text="2019-2021 Starlink &<br>Mega-Constellations",
+        fig.add_annotation(x=2020, y=1050, text="2019-2021 Starlink &<br>Internet Satellites Boom",
                            showarrow=True, arrowhead=2, arrowcolor="#10B981", ax=-80, ay=-55,
                            font=dict(color="#047857", size=10), bgcolor="#ECFDF5", bordercolor="#6EE7B7")
                        
     fig.update_layout(
         **LIGHT_THEME_LAYOUT, height=480,
         margin=dict(t=70, b=50, l=60, r=40),
-        title=dict(text="<b>M2: Retained Objects by Launch Year — Stacked Area Profile</b><br><span style='color:#64748B;font-size:12px;'>Surviving Catalog Objects Grouped by Launch Era & Historical Breakup Signatures</span>", x=0.02, y=0.96, xanchor='left'),
+        title=dict(text="<b>M2: History of Space Objects by Launch Year (1957 to 2024)</b><br><span style='color:#64748B;font-size:12px;'>Surviving Objects in Space Showing Major Crashes and Recent Satellite Booms</span>", x=0.02, y=0.96, xanchor='left'),
         xaxis=dict(title="Launch Year", gridcolor="#F1F5F9"),
-        yaxis=dict(title="Surviving Objects in Orbit", gridcolor="#F1F5F9"),
+        yaxis=dict(title="Objects Still in Space Today", gridcolor="#F1F5F9"),
         legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
     )
     return fig
 
 def create_m3_donut(data):
     if len(data) == 0:
-        return empty_figure("M3: Orbital Regime Share — LEO, MEO, GEO, and HEO")
+        return empty_figure("M3: Where Do Objects Sit Around Earth?")
     regime_counts = data['ORBIT_CLASS'].value_counts().reset_index()
     regime_counts.columns = ['ORBIT_CLASS', 'COUNT']
     
@@ -265,13 +265,13 @@ def create_m3_donut(data):
     )
     fig.update_traces(
         textposition='outside', textinfo='label+percent',
-        hovertemplate="<b>%{label} Regime</b><br>Tracked Objects: %{value:,}<br>Share of Filtered: %{percent:.1%}<extra></extra>",
+        hovertemplate="<b>%{label} Layer</b><br>Tracked Objects: %{value:,}<br>Share of Selection: %{percent:.1%}<extra></extra>",
         marker=dict(line=dict(color='#FFFFFF', width=2))
     )
     fig.update_layout(
         **LIGHT_THEME_LAYOUT, height=460,
         margin=dict(t=70, b=40, l=40, r=40),
-        title=dict(text="<b>M3: Orbital Regime Share — LEO, MEO, GEO, and HEO</b><br><span style='color:#64748B;font-size:12px;'>Proportion of Global Orbital Objects Across Altitudinal Regimes</span>", x=0.02, y=0.96, xanchor='left'),
+        title=dict(text="<b>M3: Where Do Objects Sit Around Earth? (Orbit Layers)</b><br><span style='color:#64748B;font-size:12px;'>Comparing Low Earth Orbit (LEO) vs. High Orbits (GEO, MEO, HEO)</span>", x=0.02, y=0.96, xanchor='left'),
         legend=dict(orientation="v", yanchor="middle", y=0.5, xanchor="left", x=1.02)
     )
     return fig
@@ -282,27 +282,27 @@ def create_m3_donut(data):
 
 def create_s1_histogram(data):
     if len(data) == 0:
-        return empty_figure("S1: Orbital Inclination Distribution")
+        return empty_figure("S1: Orbit Tilt Angles Distribution")
     fig = px.histogram(
         data, x='INCLINATION', color='OBJECT_TYPE',
         color_discrete_map=TYPE_COLORS, nbins=90,
         marginal='box', opacity=0.82,
-        labels={'INCLINATION': 'Orbital Inclination (Degrees °)', 'count': 'Number of Objects'}
+        labels={'INCLINATION': 'Orbit Tilt Angle (Degrees °)', 'count': 'Number of Objects'}
     )
-    fig.add_annotation(x=98.6, y=1400, text="Sun-Synchronous (SSO)<br>Polar Peak (~98°)",
+    fig.add_annotation(x=98.6, y=1400, text="Flying over Poles<br>(Polar Orbit ~98°)",
                        showarrow=True, arrowhead=2, arrowcolor="#0284C7", ax=50, ay=-40,
                        font=dict(color="#0369A1", size=10), bgcolor="#F0F9FF", bordercolor="#BAE6FD")
-    fig.add_annotation(x=53.0, y=950, text="Starlink / ISS Corridor<br>(~53°)",
+    fig.add_annotation(x=53.0, y=950, text="Starlink & Space Station<br>Lanes (~53°)",
                        showarrow=True, arrowhead=2, arrowcolor="#10B981", ax=-60, ay=-40,
                        font=dict(color="#047857", size=10), bgcolor="#ECFDF5", bordercolor="#A7F3D0")
-    fig.add_annotation(x=0.0, y=400, text="Equatorial GEO Ring<br>(~0°)",
+    fig.add_annotation(x=0.0, y=400, text="Equator TV Satellites<br>(GEO ~0°)",
                        showarrow=True, arrowhead=2, arrowcolor="#EC4899", ax=50, ay=-35,
                        font=dict(color="#BE185D", size=10), bgcolor="#FDF2F8", bordercolor="#FBCFE8")
     fig.update_layout(
         **LIGHT_THEME_LAYOUT, height=480,
         margin=dict(t=70, b=50, l=60, r=40),
-        title=dict(text="<b>S1: Orbital Inclination Distribution (Degrees °)</b><br><span style='color:#64748B;font-size:12px;'>Bimodal Astrodynamic Peaks: SSO Polar Shell (~98°) and Mid-Latitude Launch Corridors (~53°–65°)</span>", x=0.02, y=0.96, xanchor='left'),
-        xaxis=dict(title="Orbital Inclination (°)", gridcolor="#F1F5F9", range=[-2, 145]),
+        title=dict(text="<b>S1: Orbit Tilt Angles Around Earth (Degrees °)</b><br><span style='color:#64748B;font-size:12px;'>Two Big Crowds: Flying Over Earth's Poles (~98°) and Populated Cities (~53°)</span>", x=0.02, y=0.96, xanchor='left'),
+        xaxis=dict(title="Orbit Tilt Angle (°)", gridcolor="#F1F5F9", range=[-2, 145]),
         yaxis=dict(title="Object Count", gridcolor="#F1F5F9"),
         legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
     )
@@ -311,26 +311,26 @@ def create_s1_histogram(data):
 def create_s2_violin(data):
     valid_period = data[(data['PERIOD'] > 0) & (data['PERIOD'] <= 2000)].copy()
     if len(valid_period) == 0:
-        return empty_figure("S2: Orbital Period by Object Type")
+        return empty_figure("S2: Time Taken to Circle Earth")
     
     fig = px.violin(
         valid_period, x='OBJECT_TYPE', y='PERIOD', color='OBJECT_TYPE',
         color_discrete_map=TYPE_COLORS, box=True, points=False,
         category_orders={'OBJECT_TYPE': ['DEBRIS', 'PAYLOAD', 'ROCKET BODY']},
-        labels={'OBJECT_TYPE': 'Object Classification', 'PERIOD': 'Orbital Period (Minutes)'}
+        labels={'OBJECT_TYPE': 'Object Type', 'PERIOD': 'Time to Circle Earth (Minutes)'}
     )
     fig.add_hline(y=1436.1, line_dash="dash", line_color="#EC4899",
-                  annotation_text="GEO Sidereal Period (1,436 min / 23.93 h)", annotation_position="top left",
+                  annotation_text="High TV Satellites (24 hours / 1,436 min)", annotation_position="top left",
                   annotation_font=dict(color="#BE185D", size=10.5))
     fig.add_hline(y=90.0, line_dash="dot", line_color="#0284C7",
-                  annotation_text="LEO Typical Orbit (~90-100 min)", annotation_position="bottom left",
+                  annotation_text="Fast Low Orbit (~90-100 min)", annotation_position="bottom left",
                   annotation_font=dict(color="#0369A1", size=10.5))
     fig.update_layout(
         **LIGHT_THEME_LAYOUT, height=480,
         margin=dict(t=70, b=50, l=60, r=40),
-        title=dict(text="<b>S2: Orbital Period by Object Type (Violin Plot, Log Scale)</b><br><span style='color:#64748B;font-size:12px;'>Astrodynamic Velocity & Flight Time Comparison: Debris vs. Functional Payloads vs. Discarded Stages</span>", x=0.02, y=0.96, xanchor='left'),
-        yaxis=dict(type='log', range=[1.8, 3.25], title="Orbital Period (Minutes, Log Scale)", gridcolor="#F1F5F9"),
-        xaxis=dict(title="Object Classification Type", gridcolor="#F1F5F9"),
+        title=dict(text="<b>S2: Time Taken to Circle Earth (by Object Type)</b><br><span style='color:#64748B;font-size:12px;'>Comparing Trip Times: Dead Junk vs. Working Satellites vs. Old Rocket Parts</span>", x=0.02, y=0.96, xanchor='left'),
+        yaxis=dict(type='log', range=[1.8, 3.25], title="Time to Circle Earth (Minutes, Log Scale)", gridcolor="#F1F5F9"),
+        xaxis=dict(title="Object Type", gridcolor="#F1F5F9"),
         showlegend=False
     )
     return fig
@@ -338,7 +338,7 @@ def create_s2_violin(data):
 def create_s3_loglog_scatter(data):
     plot_df = data[(data['PERIAPSIS'] > 50) & (data['APOAPSIS'] > 50) & (data['APOAPSIS'] <= 60000)].copy()
     if len(plot_df) == 0:
-        return empty_figure("S3: Orbital Regime Map — Perigee vs. Apogee")
+        return empty_figure("S3: Orbit Shapes — Lowest vs Highest Distance")
     
     fig = px.scatter(
         plot_df, x='PERIAPSIS', y='APOAPSIS', color='OBJECT_TYPE',
@@ -347,30 +347,30 @@ def create_s3_loglog_scatter(data):
         log_x=True, log_y=True, opacity=0.65,
         hover_name='OBJECT_NAME',
         hover_data={'NORAD_CAT_ID': True, 'COUNTRY_NAME': True, 'PERIAPSIS': ':.1f', 'APOAPSIS': ':.1f', 'OBJECT_TYPE': True},
-        labels={'PERIAPSIS': 'Periapsis / Perigee Altitude (km, Log Scale)', 'APOAPSIS': 'Apoapsis / Apogee Altitude (km, Log Scale)', 'OBJECT_TYPE': 'Object Classification'}
+        labels={'PERIAPSIS': 'Lowest Distance to Earth (km, Log Scale)', 'APOAPSIS': 'Highest Distance to Earth (km, Log Scale)', 'OBJECT_TYPE': 'Object Type'}
     )
     # Circular Orbit Reference Line
     fig.add_trace(go.Scatter(
         x=[80, 50000], y=[80, 50000],
         mode='lines', line=dict(dash='dash', color='#64748B', width=1.5),
-        name='Circular Orbit Line (Perigee = Apogee, e ≈ 0)', hoverinfo='name'
+        name='Neat Circle Line (Lowest Point = Highest Point)', hoverinfo='name'
     ))
     fig.update_traces(marker=dict(size=4), selector=dict(mode='markers'))
     fig.update_layout(
         **LIGHT_THEME_LAYOUT, height=480,
         margin=dict(t=70, b=50, l=60, r=40),
-        title=dict(text="<b>S3: Orbital Regime Map — Perigee vs. Apogee (Log-Log Scatter by Object Type)</b><br><span style='color:#64748B;font-size:12px;'>Eccentricity Separation: Circular Operational Payloads along Diagonal vs. Cross-Regime Rocket Bodies & Debris</span>", x=0.02, y=0.96, xanchor='left'),
-        xaxis=dict(title="Periapsis / Perigee Altitude (km, Log)", gridcolor="#F1F5F9"),
-        yaxis=dict(title="Apoapsis / Apogee Altitude (km, Log)", gridcolor="#F1F5F9"),
+        title=dict(text="<b>S3: Orbit Shapes — Lowest vs. Highest Distance from Earth</b><br><span style='color:#64748B;font-size:12px;'>Working Satellites Stay in Neat Circles along Diagonal; Junk & Rockets Fly in Stretched Ovals</span>", x=0.02, y=0.96, xanchor='left'),
+        xaxis=dict(title="Lowest Distance to Earth (km, Log)", gridcolor="#F1F5F9"),
+        yaxis=dict(title="Highest Distance to Earth (km, Log)", gridcolor="#F1F5F9"),
         legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
     )
     return fig
 
 def create_s4_correlation_heatmap(data):
     cols = ['PERIOD', 'INCLINATION', 'APOAPSIS', 'PERIAPSIS', 'ECCENTRICITY', 'SEMIMAJOR_AXIS', 'MEAN_ALTITUDE_KM']
-    labels = ['Period', 'Inclination', 'Apoapsis', 'Periapsis', 'Eccentricity', 'Semi-Major Axis', 'Mean Altitude']
+    labels = ['Time (Period)', 'Tilt Angle', 'Highest Point', 'Lowest Point', 'Oval Shape', 'Orbit Size', 'Average Height']
     if len(data) < 3:
-        return empty_figure("S4: Correlation Matrix of Orbital Parameters", "Insufficient records to calculate correlations")
+        return empty_figure("S4: How Space Variables Connect to Each Other", "Not enough records to calculate connections")
     corr = data[cols].corr().round(2).fillna(0)
     
     fig = px.imshow(
@@ -381,8 +381,8 @@ def create_s4_correlation_heatmap(data):
     fig.update_layout(
         **LIGHT_THEME_LAYOUT, height=480,
         margin=dict(t=70, b=60, l=110, r=40),
-        title=dict(text="<b>S4: Correlation Matrix of Orbital Parameters (Pearson r)</b><br><span style='color:#64748B;font-size:12px;'>Empirical Laws in Data: Kepler's 3rd Law (Period ↔ Semi-Major Axis r = 0.99) vs. Inclination Independence</span>", x=0.02, y=0.96, xanchor='left'),
-        coloraxis_colorbar=dict(title="Correlation (r)", tickvals=[-0.2, 0.0, 0.5, 1.0])
+        title=dict(text="<b>S4: Connection Between Space Variables (Correlation)</b><br><span style='color:#64748B;font-size:12px;'>Unbreakable Rule: Higher Satellites Take Longer to Orbit (Score = 0.99)</span>", x=0.02, y=0.96, xanchor='left'),
+        coloraxis_colorbar=dict(title="Connection Score", tickvals=[-0.2, 0.0, 0.5, 1.0])
     )
     return fig
 
@@ -391,15 +391,15 @@ def create_s5_pareto_lollipop(data):
     if len(debris_data) == 0:
         # Fallback to general object count if debris is filtered out
         debris_data = data
-        chart_title = "<b>S5: Top 10 Contributing Nations in Selection — Pareto Distribution</b>"
+        chart_title = "<b>S5: Top 10 Countries in Selection</b>"
         count_label = "Objects Count"
     else:
-        chart_title = "<b>S5: Top 10 Debris Contributing Nations — Pareto Distribution</b>"
+        chart_title = "<b>S5: Top 10 Countries That Created the Most Space Junk</b>"
         count_label = "Debris Objects Count"
         
     top_ctry = debris_data['COUNTRY_NAME'].value_counts().head(10).reset_index()
     if len(top_ctry) == 0:
-        return empty_figure("S5: Pareto Distribution by Nation")
+        return empty_figure("S5: Country Breakdown")
         
     top_ctry.columns = ['COUNTRY_NAME', 'COUNT']
     total_val = top_ctry['COUNT'].sum()
@@ -428,14 +428,14 @@ def create_s5_pareto_lollipop(data):
     )
     
     fig.add_hline(y=80, line_dash="dash", line_color="#D97706", secondary_y=True,
-                  annotation_text="80% Pareto Threshold", annotation_position="top left",
+                  annotation_text="80% Threshold Line", annotation_position="top left",
                   annotation_font=dict(color="#B45309", size=10))
                   
     fig.update_layout(
         **LIGHT_THEME_LAYOUT, height=480,
         margin=dict(t=70, b=60, l=60, r=60),
-        title=dict(text=f"{chart_title}<br><span style='color:#64748B;font-size:12px;'>Global Responsibility: Top 3 Powers (US, China, Russia) Account for >85% of Orbiting Objects</span>", x=0.02, y=0.96, xanchor='left'),
-        xaxis=dict(title="Operating Country / Agency", tickangle=-20, gridcolor="#F1F5F9"),
+        title=dict(text=f"{chart_title}<br><span style='color:#64748B;font-size:12px;'>Top 3 Countries (US, Russia, China) Created Over 85% of All Tracked Junk</span>", x=0.02, y=0.96, xanchor='left'),
+        xaxis=dict(title="Operating Country", tickangle=-20, gridcolor="#F1F5F9"),
         legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
     )
     fig.update_yaxes(title_text=count_label, gridcolor="#F1F5F9", secondary_y=False, range=[0, max(10, top_ctry['COUNT'].max() * 1.15)])
@@ -447,15 +447,15 @@ def create_s5_pareto_lollipop(data):
 # ==============================================================================
 
 PARAM_LABELS = {
-    'INCLINATION': 'Orbital Inclination (°)',
-    'MEAN_ALTITUDE_KM': 'Mean Altitude (km)',
-    'PERIOD': 'Orbital Period (min)',
-    'ECCENTRICITY': 'Eccentricity (e)',
-    'PERIAPSIS': 'Periapsis / Perigee (km)',
-    'APOAPSIS': 'Apoapsis / Apogee (km)',
-    'OBJECT_TYPE': 'Object Classification',
-    'ORBIT_CLASS': 'Orbital Regime',
-    'RCS_SIZE': 'Radar Cross Section (RCS)'
+    'INCLINATION': 'Orbit Tilt Angle (°)',
+    'MEAN_ALTITUDE_KM': 'Average Height above Earth (km)',
+    'PERIOD': 'Time to Circle Earth (minutes)',
+    'ECCENTRICITY': 'How Oval Orbit is (Eccentricity)',
+    'PERIAPSIS': 'Lowest Point to Earth (km)',
+    'APOAPSIS': 'Highest Point to Earth (km)',
+    'OBJECT_TYPE': 'Object Type (Junk / Satellite / Rocket)',
+    'ORBIT_CLASS': 'Orbit Height Layer (LEO / MEO / GEO / HEO)',
+    'RCS_SIZE': 'Radar Size (Small / Medium / Large)'
 }
 
 def create_p1_dynamic_scatter(data, x_col='INCLINATION', y_col='MEAN_ALTITUDE_KM', color_col='OBJECT_TYPE'):
@@ -486,16 +486,16 @@ def create_p1_dynamic_scatter(data, x_col='INCLINATION', y_col='MEAN_ALTITUDE_KM
     # Specific orbital guide lines if altitude is on Y axis
     if y_col == 'MEAN_ALTITUDE_KM':
         fig.add_hline(y=35786, line_dash="dash", line_color="#EC4899",
-                      annotation_text="GEO Ring (35,786 km)", annotation_position="top left",
+                      annotation_text="High Orbit (GEO: 35,786 km)", annotation_position="top left",
                       annotation_font=dict(color="#BE185D", size=11))
         fig.add_hline(y=2000, line_dash="dot", line_color="#0284C7",
-                      annotation_text="LEO Upper Boundary (2,000 km)", annotation_position="bottom left",
+                      annotation_text="Close to Earth (LEO: 2,000 km)", annotation_position="bottom left",
                       annotation_font=dict(color="#0369A1", size=11))
                       
     fig.update_layout(
         **LIGHT_THEME_LAYOUT, height=580,
         margin=dict(t=80, b=60, l=70, r=200),
-        title=dict(text=f"<b>P1: Interactive Parameter Explorer — {PARAM_LABELS.get(x_col, x_col)} vs. {PARAM_LABELS.get(y_col, y_col)}</b><br><span style='color:#64748B;font-size:12px;'>Color coded by {PARAM_LABELS.get(color_col, color_col)} • Filtered Catalog Objects: {len(plot_df):,}</span>", x=0.02, y=0.96, xanchor='left'),
+        title=dict(text=f"<b>P1: Interactive Dot Explorer — {PARAM_LABELS.get(x_col, x_col)} vs. {PARAM_LABELS.get(y_col, y_col)}</b><br><span style='color:#64748B;font-size:12px;'>Dots Colored by {PARAM_LABELS.get(color_col, color_col)} • Filtered Space Objects: {len(plot_df):,}</span>", x=0.02, y=0.96, xanchor='left'),
         legend=dict(orientation="v", yanchor="middle", y=0.5, xanchor="left", x=1.02,
                     bgcolor="#F8FAFC", bordercolor="#E2E8F0", borderwidth=1,
                     title=dict(text=f"<b>{PARAM_LABELS.get(color_col, color_col)}</b>", font=dict(size=11, color="#64748B"))),
@@ -506,7 +506,7 @@ def create_p1_dynamic_scatter(data, x_col='INCLINATION', y_col='MEAN_ALTITUDE_KM
 
 def create_p2_treemap(data):
     if len(data) == 0:
-        return empty_figure("P2: Catalog Population Hierarchy")
+        return empty_figure("P2: Space Objects Breakdown")
     top_ctry = data['COUNTRY_NAME'].value_counts().head(10).index.tolist()
     treemap_df = data.copy()
     treemap_df['COUNTRY_GROUP'] = treemap_df['COUNTRY_NAME'].apply(lambda c: c if c in top_ctry else 'Other Nations')
@@ -515,7 +515,7 @@ def create_p2_treemap(data):
     fig = px.treemap(
         agg, path=['OBJECT_TYPE', 'COUNTRY_GROUP', 'RCS_SIZE'], values='COUNT',
         color='OBJECT_TYPE', color_discrete_map=TYPE_COLORS,
-        title="<b>P2: Catalog Population Hierarchy — Object Type → Country → Radar Cross Section</b><br><span style='color:#64748B;font-size:12px;'>Hierarchical Drill-Down Representation of Orbiting Objects</span>"
+        title="<b>P2: Space Objects Breakdown — Object Type → Country → Size</b><br><span style='color:#64748B;font-size:12px;'>Click Any Box to Zoom In & Explore Sizes and Countries</span>"
     )
     fig.update_traces(
         textinfo="label+value+percent parent",
@@ -536,8 +536,8 @@ def create_p6_ethics():
     fig = make_subplots(
         rows=1, cols=2,
         subplot_titles=(
-            "⚠️ <b>MISLEADING VISUALIZATION</b><br><span style='font-size:11px;color:#DC2626;'>Truncated Axis Baseline at 3,000 (Exaggerates Difference by 9.8×)</span>",
-            "✅ <b>ETHICAL REDESIGN</b><br><span style='font-size:11px;color:#16A34A;'>Accurate Scale Baseline at 0 (True Ratio = 1.56×)</span>"
+            "⚠️ <b>MISLEADING GRAPH</b><br><span style='font-size:11px;color:#DC2626;'>Bottom Cut Off at 3,000 (Makes Difference Look 10× Bigger than Real)</span>",
+            "✅ <b>HONEST GRAPH</b><br><span style='font-size:11px;color:#16A34A;'>Honest Scale Starting at Zero (Real Ratio is Only 1.56×)</span>"
         ),
         horizontal_spacing=0.20
     )
@@ -559,12 +559,12 @@ def create_p6_ethics():
         row=1, col=2
     )
     
-    fig.update_yaxes(title_text="Tracked Objects (Truncated Base: 3,000)", range=[3000, 5400], gridcolor="#F1F5F9", row=1, col=1)
-    fig.update_yaxes(title_text="Tracked Objects (Honest Base: 0)", range=[0, 5800], gridcolor="#F1F5F9", row=1, col=2)
+    fig.update_yaxes(title_text="Tracked Objects (Bottom Cut Off at 3,000)", range=[3000, 5400], gridcolor="#F1F5F9", row=1, col=1)
+    fig.update_yaxes(title_text="Tracked Objects (Honest Bottom at 0)", range=[0, 5800], gridcolor="#F1F5F9", row=1, col=2)
     fig.update_layout(
         **LIGHT_THEME_LAYOUT, height=520,
         margin=dict(t=90, b=50, l=60, r=60),
-        title=dict(text="<b>Ethical Visualization Case Study — Edward Tufte Lie Factor Analysis</b><br><span style='color:#64748B;font-size:12px;'>Deceptive Axis Truncation vs. Honest Scaling Principles (Tufte Lie Factor = 6.27)</span>", x=0.02, y=0.96, xanchor='left')
+        title=dict(text="<b>Graph Honesty Case Study: Honest vs. Misleading Charts</b><br><span style='color:#64748B;font-size:12px;'>Cutting Off Chart Bottoms Creates False Drama — Honest Graphs Must Always Start at Zero</span>", x=0.02, y=0.96, xanchor='left')
     )
     return fig
 
@@ -582,11 +582,11 @@ def get_content_m(data):
             children=[
                 dcc.Graph(figure=fig_m1, config={'responsive': True}),
                 create_quadrant_inference_box(
-                    "M1 Object Classification",
-                    "Defunct orbital debris constitutes the overwhelming majority of cataloged objects, outnumbering functional satellites by nearly 2:1.",
-                    "Debris = 8,431 (59.7%), Payloads = 4,950 (35.0%), Rocket Bodies = 744 (5.3%). Total catalog snapshot = 14,125 objects.",
-                    "Over six decades of space missions have accumulated non-operational fragments; spent upper stages retain residual propellants that pose severe explosive fragmentation risks.",
-                    "Space-Track GP catalog only tracks objects ≥ 10 cm; an estimated 100+ million lethal millimeter-sized fragments are untracked and uncataloged."
+                    "M1 What Kind of Objects Are in Space?",
+                    "More than half of everything flying around Earth is dead trash, not active working satellites.",
+                    "Out of 14,125 tracked objects: 8,431 (59.7%) are dead junk, 4,950 (35.0%) are working satellites, and 744 (5.3%) are old rocket parts. There is nearly twice as much junk as active satellites.",
+                    "Over 65 years of space flights have left behind broken satellites and dropped rocket boosters. These never go away on their own, and leftover rocket fuel tanks can even explode in the sun.",
+                    "Radars on Earth can only track pieces bigger than 10 cm (about the size of a ball). Over 100 million tiny metal chips and screws are flying around untracked."
                 )
             ]
         ),
@@ -595,11 +595,11 @@ def get_content_m(data):
             children=[
                 dcc.Graph(figure=fig_m2, config={'responsive': True}),
                 create_quadrant_inference_box(
-                    "M2 Temporal Launch Evolution",
-                    "Debris from early space age persists for decades, punctuated by abrupt fragmentation events and a modern exponential commercial boom.",
-                    "Surviving objects span 1957–2021; peak fragmentation spikes in 2007 (Fengyun-1C: 800+ retained fragments) and 2009 (Cosmos-Iridium: 500+ fragments); 2019–2021 accounts for >25% of active payloads.",
-                    "High-altitude debris lacks atmospheric drag decay; single collision events permanently degrade orbital belts for centuries.",
-                    "Retained catalog counts reflect surviving objects as of epoch, not historical launch volume (decayed objects are excluded)."
+                    "M2 History of Space Objects (1957 to 2024)",
+                    "Old junk from the early space age stays in orbit for decades, while thousands of new satellites were launched in recent years.",
+                    "Objects in space date from 1957 all the way to 2024. Big jumps happened in 2007 (a missile test destroyed a satellite, creating 800+ pieces) and 2009 (two satellites crashed into each other, creating 500+ pieces). Recent years show thousands of new internet satellites.",
+                    "High up in space, there is almost no air to slow objects down. A piece of trash created 50 years ago can stay in orbit and threaten new spacecraft for hundreds of years.",
+                    "This chart only shows objects that are still in space today. Pieces that already fell back down and burned up in Earth's atmosphere are not included."
                 )
             ]
         ),
@@ -608,11 +608,11 @@ def get_content_m(data):
             children=[
                 dcc.Graph(figure=fig_m3, config={'responsive': True}),
                 create_quadrant_inference_box(
-                    "M3 Orbital Regime Share",
-                    "Low Earth Orbit (LEO) is the single most congested astrodynamic shell, concentrating global collision risks.",
-                    "LEO = 11,739 (83.1%), HEO = 1,608 (11.4%), GEO = 645 (4.6%), MEO = 266 (1.9%). LEO density is 18× greater than GEO.",
-                    "LEO proximity minimizes launch cost and latency for commercial mega-constellations, concentrating collision cross-sections below 2,000 km.",
-                    "Categorization uses osculating apogee/perigee boundaries; highly eccentric orbits transit multiple altitude classifications."
+                    "M3 Where Do Objects Sit Around Earth? (Orbit Layers)",
+                    "The vast majority of all objects are crowded into the lowest layer of space, right next to Earth.",
+                    "Low Earth Orbit (LEO, below 2,000 km) holds 11,739 objects (83.1%). High orbits have far fewer: HEO holds 1,608 (11.4%), GEO holds 645 (4.6%), and MEO holds 266 (1.9%).",
+                    "Low Earth Orbit is close, cheap to reach, and provides fast internet and clear pictures of Earth. But because almost all satellites go there, it has become an extreme traffic jam.",
+                    "Some objects travel in egg-shaped (oval) paths, meaning they pass through both low and high space during each trip around Earth."
                 )
             ]
         )
@@ -630,11 +630,11 @@ def get_content_s(data):
             children=[
                 dcc.Graph(figure=fig_s1, config={'responsive': True}),
                 create_quadrant_inference_box(
-                    "S1 Orbital Inclination Distribution",
-                    "Strongly bimodal distribution dominated by polar sun-synchronous orbits and mid-latitude launch corridor inclinations.",
-                    "Primary peak at 96°–102° (SSO, Mode = 98.6° with 3,420+ objects); secondary peak at 51°–55° (Starlink/ISS, 2,150+ objects); equatorial GEO at 0°–5° (645 objects).",
-                    "Polar SSO enables constant solar angle for Earth observation; 53° maximizes ground coverage of global population centers while gaining launch boost.",
-                    "Launch latitude geography artificially constrains inclination options due to Earth's rotational velocity boost."
+                    "S1 Orbit Tilt Angles Around Earth",
+                    "Satellites and space junk do not fly around randomly; they crowd together at very specific tilt angles.",
+                    "The biggest peak is near 98° (over 3,400 objects flying over Earth's poles). A second peak is near 53° (over 2,150 objects, including Starlink and the space station). High TV satellites sit at 0° (equator).",
+                    "Flying over the poles lets satellites scan the entire spinning Earth for weather and maps. Flying at 53° lets satellites cover the cities where most humans live.",
+                    "Rockets get a free speed boost when launched in the direction Earth spins, which is why countries prefer certain launch angles."
                 )
             ]
         ),
@@ -643,11 +643,11 @@ def get_content_s(data):
             children=[
                 dcc.Graph(figure=fig_s2, config={'responsive': True}),
                 create_quadrant_inference_box(
-                    "S2 Orbital Period by Object Type",
-                    "Debris is heavily confined to short 90-minute Low Earth Orbits, whereas payloads span a wide multi-modal distribution reaching 24-hour geostationary synchronization.",
-                    "Debris median period = 96.1 min (IQR: 92.4–101.8 min, 98% in LEO); Payloads display a tri-modal profile at 96 min (LEO), 718 min (MEO GPS), and 1,436 min (GEO telecom); Rocket bodies median = 95.8 min with upper-stage GTO transfer tails up to 700+ min.",
-                    "Functional satellites operate across specialized altitude regimes depending on mission requirements, whereas fragmentation debris concentrates predominantly in hypervelocity Low Earth Orbits where human spaceflight and commercial constellations operate.",
-                    "Excludes decayed objects; logarithmic scaling compresses variance at high periods, masking subtle orbital drift rates."
+                    "S2 How Fast Do Objects Circle Earth?",
+                    "Dead junk circles Earth very fast (every 90 minutes), while active satellites are spread out at different heights and speeds.",
+                    "Dead junk takes an average of only 96 minutes to go around Earth because it is very close. Working satellites take from 90 minutes (close satellites) up to 12 hours (GPS satellites) and 24 hours (TV satellites).",
+                    "TV and weather satellites stay 36,000 km high so they take exactly 24 hours to match Earth's spin and stay over the same city. But almost all the dangerous junk is packed in the low, fast zone.",
+                    "This chart excludes objects that have already fallen down. The scale is compressed so both 90-minute and 24-hour orbits can fit on one screen."
                 )
             ]
         ),
@@ -656,11 +656,11 @@ def get_content_s(data):
             children=[
                 dcc.Graph(figure=fig_s3, config={'responsive': True}),
                 create_quadrant_inference_box(
-                    "S3 Perigee vs. Apogee Structure",
-                    "Operational payloads tightly align along the circular line (e ≈ 0), whereas debris and rocket bodies disperse into high-eccentricity transfer and decay zones.",
-                    "Payloads exhibit >82% circular orbits along the diagonal axis; Rocket bodies exhibit apogees up to 36,000 km with perigees <600 km (GTO transfer orbits); Debris shows extensive altitude dispersion.",
-                    "Satellites are intentionally maintained in circular operational slots to provide constant coverage, while spent upper stages are abandoned in highly elliptical disposal corridors.",
-                    "Atmospheric drag continuously circularizes and lowers high-drag fragments over multi-year decay timelines."
+                    "S3 Orbit Shapes (Lowest vs. Highest Height)",
+                    "Working satellites fly in neat circular paths, while broken junk and old rocket stages fly in stretched, oval paths.",
+                    "Over 82% of working satellites lie along the straight diagonal line (where lowest point equals highest point = a neat circle). Old rocket boosters stretch from 500 km all the way up to 36,000 km.",
+                    "Engineers steer active satellites into circles to keep signals steady. Broken pieces cannot steer, so they wobble in stretched paths that cut across other satellite lanes.",
+                    "Over many decades, thin air slowly drags down the lowest point of oval orbits until the object burns up in Earth's atmosphere."
                 )
             ]
         ),
@@ -669,11 +669,11 @@ def get_content_s(data):
             children=[
                 dcc.Graph(figure=fig_s4, config={'responsive': True}),
                 create_quadrant_inference_box(
-                    "S4 Parameter Correlation Matrix",
-                    "Orbital period and semi-major axis demonstrate a near-perfect deterministic correlation (r = 0.99), validating Kepler's Third Law in empirical tracking data.",
-                    "Pearson r(Period, Semi-Major Axis) = 0.99; r(Period, Apoapsis) = 0.94; r(Inclination, Altitude) ≈ 0.02 (astrodynamically orthogonal).",
-                    "Keplerian mechanics dictate that an object's orbital period depends solely on the semi-major axis, while launch trajectory inclination is an independent mission choice.",
-                    "Pearson coefficients capture linear dependencies; non-linear perturbation effects (J2 zonal harmonics) are not modeled."
+                    "S4 How Orbit Variables Relate to Each Other",
+                    "There is a strict rule in space: the higher a satellite is from Earth, the longer it takes to make one full trip.",
+                    "The connection between orbit height and time to circle Earth is 0.99 out of 1.0 (an almost perfect match). But tilt angle has a score near 0 (tilt does not change speed at all).",
+                    "This confirms basic physics discovered hundreds of years ago: distance from Earth strictly sets orbital speed, while which direction the rocket was tilted is up to the mission.",
+                    "This score measures simple straight-line patterns; small wobbles caused by Earth's gravity are not included in this simple number."
                 )
             ]
         ),
@@ -682,11 +682,11 @@ def get_content_s(data):
             children=[
                 dcc.Graph(figure=fig_s5, config={'responsive': True}),
                 create_quadrant_inference_box(
-                    "S5 National Debris Contribution (Pareto)",
-                    "A classic Pareto 80/20 distribution exists in space debris creation: the top 3 spacefaring superpowers generate >85% of all cataloged orbital junk.",
-                    "United States (3,800+), Russia/CIS (3,200+), and China (PRC) (2,900+) account for 85.4% of all verified debris; remaining nations combined contribute <15%.",
-                    "Cold War anti-satellite testing, the 2007 Chinese ASAT test, the 2009 Cosmos-Iridium collision, and historic rocket upper-stage breakups generated massive legacy fragment clouds.",
-                    "Counts represent tracked catalog objects only; commercial joint ventures and multinational consortiums complicate absolute legal attribution."
+                    "S5 Which Countries Created the Most Space Junk?",
+                    "Just three countries are responsible for over 85% of all tracked space garbage.",
+                    "The United States (3,800+ pieces), Russia (3,200+ pieces), and China (2,900+ pieces) make up 85.4% of all verified debris. All other countries combined make up less than 15%.",
+                    "These three countries conducted the most space launches during and after the Cold War. Past missile tests and satellite collisions created massive clouds of lasting fragments.",
+                    "This only counts pieces that have clear country tags. Some shared international satellites cannot easily be blamed on a single country."
                 )
             ]
         )
@@ -700,16 +700,16 @@ def get_content_p(data, x_col='INCLINATION', y_col='MEAN_ALTITUDE_KM', color_col
             style=card_style,
             children=[
                 html.Div([
-                    html.Span("🔬 Dynamic Astrodynamic Parameter Exploration: ", style={'fontSize': '13.5px', 'fontWeight': '800', 'color': '#1D4ED8'}),
-                    html.Span(f"Currently plotting {PARAM_LABELS.get(x_col, x_col)} (X-Axis) vs. {PARAM_LABELS.get(y_col, y_col)} (Y-Axis) grouped by {PARAM_LABELS.get(color_col, color_col)}. (Change any variable from Controls 4, 5, and 6 in the top panel above).", style={'fontSize': '12.5px', 'color': '#64748B'})
+                    html.Span("🔬 Live Space Parameter Explorer: ", style={'fontSize': '13.5px', 'fontWeight': '800', 'color': '#1D4ED8'}),
+                    html.Span(f"Currently comparing {PARAM_LABELS.get(x_col, x_col)} (Bottom Axis) against {PARAM_LABELS.get(y_col, y_col)} (Side Axis), with colors by {PARAM_LABELS.get(color_col, color_col)}. (Change any variable in Controls 4, 5, and 6 above).", style={'fontSize': '12.5px', 'color': '#64748B'})
                 ], style={'backgroundColor': '#EFF6FF', 'border': '1px solid #BFDBFE', 'borderRadius': '10px', 'padding': '12px 18px', 'marginBottom': '18px'}),
                 dcc.Graph(figure=fig_p1, config={'responsive': True}),
                 create_quadrant_inference_box(
-                    "P1 Interactive Scatter Explorer",
-                    "Dynamic astrodynamic exploration reveals distinct clustering across Sun-Synchronous polar shells (~98°), mega-constellations (~53°), and geostationary belts.",
-                    f"Showing {len(data):,} filtered objects across multidimensional parameters ({PARAM_LABELS.get(x_col, x_col)} vs. {PARAM_LABELS.get(y_col, y_col)}).",
-                    "Satellite orbital architecture is driven by functional requirements (equatorial GEO for communications, mid-latitude for commercial broadband, SSO for optical imaging).",
-                    "Scatter overlays obscure point density in mega-constellation clusters; interactive tooltips and zooming provide precise local inspection."
+                    "P1 Interactive Dot Explorer",
+                    "Changing the variables lets you see how satellites and debris group into clear lanes in space.",
+                    f"Showing {len(data):,} selected objects right now. Dots line up in clear bands representing working satellite highways and debris zones.",
+                    "Satellites are placed in specific lanes depending on what job they do: communication satellites stay 36,000 km up, while camera and internet satellites stay close below 2,000 km.",
+                    "When thousands of dots sit on top of each other, use the filters above or hover your mouse over individual dots to see exact satellite names and details."
                 )
             ]
         ),
@@ -718,11 +718,11 @@ def get_content_p(data, x_col='INCLINATION', y_col='MEAN_ALTITUDE_KM', color_col
             children=[
                 dcc.Graph(figure=fig_p2, config={'responsive': True}),
                 create_quadrant_inference_box(
-                    "P2 Catalog Hierarchy Treemap",
-                    "Hierarchical breakdown illustrates that small-to-medium fragments from the top spacefaring nations dominate the active orbital inventory.",
-                    "Debris represents 59.7% of catalog root; within debris, Small RCS fragments account for >60% of US and Chinese holdings.",
-                    "Fragment size distribution follows power-law collision breakups; smaller fragments are exponentially more numerous and harder to detect.",
-                    "Space-Track catalog has a hard detection threshold at RCS ≈ 10 cm in LEO; sub-decimeter debris cannot be reliably indexed."
+                    "P2 Size and Country Breakdown",
+                    "Small and medium metal fragments from the major space powers take up the largest share of the space catalog.",
+                    "Dead junk makes up 59.7% of the total box area. Inside the junk section, small pieces make up over 60% of the pieces from the US and China.",
+                    "When satellites explode or crash, large parts shatter into many smaller pieces. Smaller pieces are much more numerous and much harder to dodge.",
+                    "Ground radars cannot reliably detect pieces smaller than 10 cm, so this chart represents only the large fragments that we can see."
                 )
             ]
         )
@@ -736,11 +736,11 @@ def get_content_ethics():
             children=[
                 dcc.Graph(figure=fig_ethics, config={'responsive': True}),
                 create_quadrant_inference_box(
-                    "Ethical Visualization Case Study",
-                    "Baseline truncation visually misrepresents relative space accountability by nearly an order of magnitude.",
-                    "Misleading graphic effect size = 9.78× (visual bar ratio); true data effect size = 1.56× (5,026 / 3,207); Tufte Lie Factor = 6.27 (> 1.05 represents severe visual deception).",
-                    "Ethical data visualization requires maintaining zero baselines for bar charts and providing explicit proportional context to prevent geopolitical bias.",
-                    "Lie Factor quantifies 1D length distortion; cognitive misinterpretation in complex multi-dimensional charts requires perceptual testing."
+                    "Honest vs Misleading Charts (Ethics Case Study)",
+                    "Cutting off the bottom of a chart tricks the eye and makes small differences look massive.",
+                    "In the misleading chart on the left, the bottom starts at 3,000, making the US bar look nearly 10 times taller than Russia. In the honest chart on the right starting at zero, the US bar is only 1.5 times taller.",
+                    "News reports and presentations sometimes chop chart axes to create fake drama or blame a specific country. Honest charts must always start at zero for fair comparisons.",
+                    "Starting at zero is essential for bar charts because our eyes judge amounts by the physical height of the bars."
                 )
             ]
         )
@@ -809,14 +809,74 @@ app.layout = html.Div(
             },
             children=[
                 html.Div([
-                    html.H1("🛰️ Satellite Space Debris Analytics — Dashboard", style={'margin': '0 0 6px 0', 'fontSize': '26px', 'fontWeight': '800', 'color': '#0F172A'}),
-                    html.P("Exploratory Data Analysis, Astrodynamics & Space Safety • 14,125 Tracked Objects Analyzed", style={'margin': '0', 'color': '#64748B', 'fontSize': '13.5px'})
+                    html.H1("🛰️ Space Garbage & Satellite Tracker Dashboard", style={'margin': '0 0 6px 0', 'fontSize': '26px', 'fontWeight': '800', 'color': '#0F172A'}),
+                    html.P("Easy & Clear Analysis of 14,125 Real Objects in Space • The Space Junk Problem Explained for Everyone", style={'margin': '0', 'color': '#64748B', 'fontSize': '13.5px'})
                 ]),
                 html.Div(style={'display': 'flex', 'gap': '10px', 'flexWrap': 'wrap'}, children=[
                     html.Span("Name: Vudattu Sai Satya Saketh", style={'backgroundColor': '#EFF6FF', 'color': '#1D4ED8', 'border': '1px solid #BFDBFE', 'padding': '6px 14px', 'borderRadius': '14px', 'fontSize': '12.5px', 'fontWeight': '600'}),
                     html.Span("Roll: CB.SC.U4CSE24558", style={'backgroundColor': '#EFF6FF', 'color': '#1D4ED8', 'border': '1px solid #BFDBFE', 'padding': '6px 14px', 'borderRadius': '14px', 'fontSize': '12.5px', 'fontWeight': '600'}),
                     html.Span("Course: 23CSE353 Data Visualization", style={'backgroundColor': '#ECFDF5', 'color': '#047857', 'border': '1px solid #A7F3D0', 'padding': '6px 14px', 'borderRadius': '14px', 'fontSize': '12.5px', 'fontWeight': '600'})
                 ])
+            ]
+        ),
+
+        # Executive Overview: Problem Statement & Key Empirical Findings Card
+        html.Div(
+            style={
+                'backgroundColor': '#FFFFFF',
+                'border': '1px solid #E2E8F0',
+                'borderLeft': '5px solid #2563EB',
+                'borderRadius': '16px',
+                'padding': '22px 28px',
+                'marginBottom': '20px',
+                'boxShadow': '0 2px 8px rgba(0,0,0,0.03)'
+            },
+            children=[
+                # Card Header
+                html.Div(
+                    style={'marginBottom': '14px'},
+                    children=[
+                        html.Span("🎯 Project Summary: What is the Problem & What Did We Discover?", style={'fontSize': '16px', 'fontWeight': '800', 'color': '#0F172A'}),
+                        html.Span(" — A simple guide to understanding space junk and why it matters to us", style={'fontSize': '13px', 'color': '#64748B'})
+                    ]
+                ),
+                # 2-Column Summary Ribbon
+                html.Div(
+                    style={'display': 'grid', 'gridTemplateColumns': 'repeat(auto-fit, minmax(320px, 1fr))', 'gap': '20px'},
+                    children=[
+                        # Left Summary Column: Problem Context
+                        html.Div(
+                            style={'backgroundColor': '#F8FAFC', 'border': '1px solid #E2E8F0', 'borderRadius': '12px', 'padding': '14px 18px'},
+                            children=[
+                                html.Div("📌 THE PROBLEM STATEMENT", style={'color': '#0284C7', 'fontSize': '11.5px', 'fontWeight': '800', 'letterSpacing': '0.5px', 'marginBottom': '6px'}),
+                                html.P(
+                                    "Since 1957, countries have launched thousands of rockets and satellites into space. "
+                                    "When satellites die or rockets run out of fuel, they do not fall down—they stay trapped in space forever as floating metal trash (called space junk). "
+                                    "Because this junk flies at crazy speeds over 25,000 km per hour (more than 10 times faster than a bullet!), even a tiny paint flake or loose screw can destroy a working weather satellite or hit astronauts on the space station. "
+                                    "This project looks at 14,125 real tracked objects in space to show how crowded it is, who made the mess, and how honest graphs help us fix it.",
+                                    style={'margin': '0', 'fontSize': '12.5px', 'color': '#334155', 'lineHeight': '1.55'}
+                                )
+                            ]
+                        ),
+                        # Right Summary Column: Executive Findings
+                        html.Div(
+                            style={'backgroundColor': '#F8FAFC', 'border': '1px solid #E2E8F0', 'borderRadius': '12px', 'padding': '14px 18px'},
+                            children=[
+                                html.Div("🔍 KEY FINDINGS & DISCOVERIES", style={'color': '#059669', 'fontSize': '11.5px', 'fontWeight': '800', 'letterSpacing': '0.5px', 'marginBottom': '6px'}),
+                                html.Ul(
+                                    style={'margin': '0', 'paddingLeft': '18px', 'fontSize': '12.5px', 'color': '#334155', 'lineHeight': '1.55'},
+                                    children=[
+                                        html.Li(html.Span(["🗑️ Most Objects Are Trash: ", html.B("60% of all objects (8,431 pieces)"), " are dead junk—outnumbering working satellites 2 to 1."])),
+                                        html.Li(html.Span(["🚗 Huge Traffic Jam Near Earth: ", html.B("Over 83% of all objects (11,739)"), " are jammed in the lowest layer close to Earth."])),
+                                        html.Li(html.Span(["🌍 3 Countries Made 85% of the Junk: ", html.B("The US, Russia, and China"), " created almost all the tracked space garbage."])),
+                                        html.Li(html.Span(["⏱️ Higher Means Slower: ", html.B("Satellites close to Earth"), " circle in 90 minutes, while high satellites take 24 hours."])),
+                                        html.Li(html.Span(["⚖️ Graph Tricks Can Fool People: ", html.B("Chopping the bottom of a chart"), " makes differences look 10 times bigger than they really are."]))
+                                    ]
+                                )
+                            ]
+                        )
+                    ]
+                )
             ]
         ),
 
@@ -835,8 +895,8 @@ app.layout = html.Div(
                     style={'display': 'flex', 'justifyContent': 'space-between', 'alignItems': 'center', 'marginBottom': '16px', 'flexWrap': 'wrap', 'gap': '12px'},
                     children=[
                         html.Div([
-                            html.Span("🎛️ Dynamic Parameter Selection & Filtering", style={'fontSize': '15.5px', 'fontWeight': '800', 'color': '#0F172A'}),
-                            html.Span(" — Filter objects across all charts & analyze parameters interactively", style={'fontSize': '13px', 'color': '#64748B'})
+                            html.Span("🎛️ Interactive Controls & Filters", style={'fontSize': '15.5px', 'fontWeight': '800', 'color': '#0F172A'}),
+                            html.Span(" — Filter objects across all charts & analyze parameters in real time", style={'fontSize': '13px', 'color': '#64748B'})
                         ]),
                         html.Div(
                             style={'display': 'flex', 'gap': '12px', 'alignItems': 'center'},
@@ -862,14 +922,14 @@ app.layout = html.Div(
                     children=[
                         # Parameter 1: Object Type
                         html.Div([
-                            html.Label("1. Object Classification:", style={'fontSize': '12px', 'fontWeight': '700', 'color': '#475569', 'marginBottom': '6px', 'display': 'block'}),
+                            html.Label("1. Filter by Object Type:", style={'fontSize': '12px', 'fontWeight': '700', 'color': '#475569', 'marginBottom': '6px', 'display': 'block'}),
                             dcc.Dropdown(
                                 id='filter-type',
                                 options=[
-                                    {'label': '🌐 All Object Types (14,125)', 'value': 'ALL'},
-                                    {'label': '🔴 Defunct Debris Only (8,431)', 'value': 'DEBRIS'},
-                                    {'label': '🟢 Payload Satellites Only (4,950)', 'value': 'PAYLOAD'},
-                                    {'label': '🟡 Spent Rocket Bodies Only (744)', 'value': 'ROCKET BODY'}
+                                    {'label': '🌐 All Space Objects (14,125)', 'value': 'ALL'},
+                                    {'label': '🔴 Dead Space Junk Only (8,431)', 'value': 'DEBRIS'},
+                                    {'label': '🟢 Working Satellites Only (4,950)', 'value': 'PAYLOAD'},
+                                    {'label': '🟡 Old Rocket Parts Only (744)', 'value': 'ROCKET BODY'}
                                 ],
                                 value='ALL',
                                 clearable=False,
@@ -878,15 +938,15 @@ app.layout = html.Div(
                         ]),
                         # Parameter 2: Orbital Regime
                         html.Div([
-                            html.Label("2. Orbital Regime Shell:", style={'fontSize': '12px', 'fontWeight': '700', 'color': '#475569', 'marginBottom': '6px', 'display': 'block'}),
+                            html.Label("2. Filter by Orbit Layer (Height):", style={'fontSize': '12px', 'fontWeight': '700', 'color': '#475569', 'marginBottom': '6px', 'display': 'block'}),
                             dcc.Dropdown(
                                 id='filter-regime',
                                 options=[
-                                    {'label': '🌌 All Orbital Regimes (14,125)', 'value': 'ALL'},
-                                    {'label': '🔵 Low Earth Orbit — LEO (11,739)', 'value': 'LEO'},
-                                    {'label': '🟣 Medium Earth Orbit — MEO (266)', 'value': 'MEO'},
-                                    {'label': '🌸 Geostationary Orbit — GEO (645)', 'value': 'GEO'},
-                                    {'label': '🟠 Highly Eccentric Orbit — HEO (1,608)', 'value': 'HEO'}
+                                    {'label': '🌌 All Orbit Heights (14,125)', 'value': 'ALL'},
+                                    {'label': '🔵 Low Earth Orbit — LEO (Below 2,000 km, closest to Earth)', 'value': 'LEO'},
+                                    {'label': '🟣 Medium Height — MEO (2,000 to 35,786 km, GPS layer)', 'value': 'MEO'},
+                                    {'label': '🌸 High Fixed Orbit — GEO (35,786 km, TV & Weather)', 'value': 'GEO'},
+                                    {'label': '🟠 Oval / Egg-shaped Orbit — HEO', 'value': 'HEO'}
                                 ],
                                 value='ALL',
                                 clearable=False,
@@ -895,7 +955,7 @@ app.layout = html.Div(
                         ]),
                         # Parameter 3: Launch Year Range Slider
                         html.Div([
-                            html.Label("3. Launch Year Era Range:", style={'fontSize': '12px', 'fontWeight': '700', 'color': '#475569', 'marginBottom': '6px', 'display': 'block'}),
+                            html.Label("3. Filter by Launch Year (When Sent to Space):", style={'fontSize': '12px', 'fontWeight': '700', 'color': '#475569', 'marginBottom': '6px', 'display': 'block'}),
                             dcc.RangeSlider(
                                 id='filter-year',
                                 min=1957, max=2024, step=1,
@@ -912,16 +972,16 @@ app.layout = html.Div(
                     children=[
                         # Parameter 4: X-Axis Parameter
                         html.Div([
-                            html.Label("4. Scatter X-Axis Parameter (Plotly Suite):", style={'fontSize': '12px', 'fontWeight': '700', 'color': '#475569', 'marginBottom': '6px', 'display': 'block'}),
+                            html.Label("4. Bottom Axis (X-Axis Variable):", style={'fontSize': '12px', 'fontWeight': '700', 'color': '#475569', 'marginBottom': '6px', 'display': 'block'}),
                             dcc.Dropdown(
                                 id='scatter-x-param',
                                 options=[
-                                    {'label': 'Orbital Inclination (°)', 'value': 'INCLINATION'},
-                                    {'label': 'Mean Altitude (km)', 'value': 'MEAN_ALTITUDE_KM'},
-                                    {'label': 'Orbital Period (min)', 'value': 'PERIOD'},
-                                    {'label': 'Eccentricity (e)', 'value': 'ECCENTRICITY'},
-                                    {'label': 'Periapsis / Perigee (km)', 'value': 'PERIAPSIS'},
-                                    {'label': 'Apoapsis / Apogee (km)', 'value': 'APOAPSIS'}
+                                    {'label': 'Orbit Tilt Angle in Degrees (Inclination)', 'value': 'INCLINATION'},
+                                    {'label': 'Average Height Above Earth in km (Altitude)', 'value': 'MEAN_ALTITUDE_KM'},
+                                    {'label': 'Time to Circle Earth in Minutes (Period)', 'value': 'PERIOD'},
+                                    {'label': 'How Oval the Orbit is (Eccentricity)', 'value': 'ECCENTRICITY'},
+                                    {'label': 'Lowest Distance to Earth in km (Perigee)', 'value': 'PERIAPSIS'},
+                                    {'label': 'Highest Distance to Earth in km (Apogee)', 'value': 'APOAPSIS'}
                                 ],
                                 value='INCLINATION',
                                 clearable=False,
@@ -930,16 +990,16 @@ app.layout = html.Div(
                         ]),
                         # Parameter 5: Y-Axis Parameter
                         html.Div([
-                            html.Label("5. Scatter Y-Axis Parameter (Plotly Suite):", style={'fontSize': '12px', 'fontWeight': '700', 'color': '#475569', 'marginBottom': '6px', 'display': 'block'}),
+                            html.Label("5. Side Axis (Y-Axis Variable):", style={'fontSize': '12px', 'fontWeight': '700', 'color': '#475569', 'marginBottom': '6px', 'display': 'block'}),
                             dcc.Dropdown(
                                 id='scatter-y-param',
                                 options=[
-                                    {'label': 'Mean Altitude (km)', 'value': 'MEAN_ALTITUDE_KM'},
-                                    {'label': 'Apoapsis / Apogee (km)', 'value': 'APOAPSIS'},
-                                    {'label': 'Periapsis / Perigee (km)', 'value': 'PERIAPSIS'},
-                                    {'label': 'Orbital Period (min)', 'value': 'PERIOD'},
-                                    {'label': 'Eccentricity (e)', 'value': 'ECCENTRICITY'},
-                                    {'label': 'Orbital Inclination (°)', 'value': 'INCLINATION'}
+                                    {'label': 'Average Height Above Earth in km (Altitude)', 'value': 'MEAN_ALTITUDE_KM'},
+                                    {'label': 'Highest Distance to Earth in km (Apogee)', 'value': 'APOAPSIS'},
+                                    {'label': 'Lowest Distance to Earth in km (Perigee)', 'value': 'PERIAPSIS'},
+                                    {'label': 'Time to Circle Earth in Minutes (Period)', 'value': 'PERIOD'},
+                                    {'label': 'How Oval the Orbit is (Eccentricity)', 'value': 'ECCENTRICITY'},
+                                    {'label': 'Orbit Tilt Angle in Degrees (Inclination)', 'value': 'INCLINATION'}
                                 ],
                                 value='MEAN_ALTITUDE_KM',
                                 clearable=False,
@@ -948,13 +1008,13 @@ app.layout = html.Div(
                         ]),
                         # Parameter 6: Color Grouping
                         html.Div([
-                            html.Label("6. Group / Color By Parameter (Plotly Suite):", style={'fontSize': '12px', 'fontWeight': '700', 'color': '#475569', 'marginBottom': '6px', 'display': 'block'}),
+                            html.Label("6. Color the Dots By:", style={'fontSize': '12px', 'fontWeight': '700', 'color': '#475569', 'marginBottom': '6px', 'display': 'block'}),
                             dcc.Dropdown(
                                 id='scatter-color-param',
                                 options=[
-                                    {'label': 'Object Classification', 'value': 'OBJECT_TYPE'},
-                                    {'label': 'Orbital Regime', 'value': 'ORBIT_CLASS'},
-                                    {'label': 'Radar Cross Section (RCS)', 'value': 'RCS_SIZE'}
+                                    {'label': 'Object Type (Junk vs Working Satellite vs Rocket)', 'value': 'OBJECT_TYPE'},
+                                    {'label': 'Orbit Height Layer (LEO, MEO, GEO, HEO)', 'value': 'ORBIT_CLASS'},
+                                    {'label': 'Radar Size (Small, Medium, Large)', 'value': 'RCS_SIZE'}
                                 ],
                                 value='OBJECT_TYPE',
                                 clearable=False,
@@ -971,27 +1031,27 @@ app.layout = html.Div(
             style={'display': 'grid', 'gridTemplateColumns': 'repeat(auto-fit, minmax(210px, 1fr))', 'gap': '16px', 'marginBottom': '28px'},
             children=[
                 html.Div(style={'backgroundColor': '#FFFFFF', 'border': '1px solid #E2E8F0', 'borderTop': '4px solid #2563EB', 'borderRadius': '12px', 'padding': '16px 20px', 'boxShadow': '0 1px 3px rgba(0,0,0,0.04)'}, children=[
-                    html.Div("Filtered Objects", style={'fontSize': '11.5px', 'color': '#64748B', 'textTransform': 'uppercase', 'fontWeight': '700'}),
+                    html.Div("Selected Objects", style={'fontSize': '11.5px', 'color': '#64748B', 'textTransform': 'uppercase', 'fontWeight': '700'}),
                     html.Div(id="kpi-total-val", style={'fontSize': '28px', 'fontWeight': '800', 'color': '#2563EB', 'margin': '4px 0', 'fontFamily': 'monospace'}),
                     html.Div(id="kpi-total-sub", style={'fontSize': '12px', 'color': '#94A3B8'})
                 ]),
                 html.Div(style={'backgroundColor': '#FFFFFF', 'border': '1px solid #E2E8F0', 'borderTop': '4px solid #EF4444', 'borderRadius': '12px', 'padding': '16px 20px', 'boxShadow': '0 1px 3px rgba(0,0,0,0.04)'}, children=[
-                    html.Div("Defunct Debris", style={'fontSize': '11.5px', 'color': '#64748B', 'textTransform': 'uppercase', 'fontWeight': '700'}),
+                    html.Div("Dead Space Junk", style={'fontSize': '11.5px', 'color': '#64748B', 'textTransform': 'uppercase', 'fontWeight': '700'}),
                     html.Div(id="kpi-debris-val", style={'fontSize': '28px', 'fontWeight': '800', 'color': '#EF4444', 'margin': '4px 0', 'fontFamily': 'monospace'}),
                     html.Div(id="kpi-debris-sub", style={'fontSize': '12px', 'color': '#DC2626', 'fontWeight': '600'})
                 ]),
                 html.Div(style={'backgroundColor': '#FFFFFF', 'border': '1px solid #E2E8F0', 'borderTop': '4px solid #10B981', 'borderRadius': '12px', 'padding': '16px 20px', 'boxShadow': '0 1px 3px rgba(0,0,0,0.04)'}, children=[
-                    html.Div("Payload Satellites", style={'fontSize': '11.5px', 'color': '#64748B', 'textTransform': 'uppercase', 'fontWeight': '700'}),
+                    html.Div("Working Satellites", style={'fontSize': '11.5px', 'color': '#64748B', 'textTransform': 'uppercase', 'fontWeight': '700'}),
                     html.Div(id="kpi-payload-val", style={'fontSize': '28px', 'fontWeight': '800', 'color': '#10B981', 'margin': '4px 0', 'fontFamily': 'monospace'}),
                     html.Div(id="kpi-payload-sub", style={'fontSize': '12px', 'color': '#94A3B8'})
                 ]),
                 html.Div(style={'backgroundColor': '#FFFFFF', 'border': '1px solid #E2E8F0', 'borderTop': '4px solid #F59E0B', 'borderRadius': '12px', 'padding': '16px 20px', 'boxShadow': '0 1px 3px rgba(0,0,0,0.04)'}, children=[
-                    html.Div("Spent Rocket Bodies", style={'fontSize': '11.5px', 'color': '#64748B', 'textTransform': 'uppercase', 'fontWeight': '700'}),
+                    html.Div("Old Rocket Parts", style={'fontSize': '11.5px', 'color': '#64748B', 'textTransform': 'uppercase', 'fontWeight': '700'}),
                     html.Div(id="kpi-rb-val", style={'fontSize': '28px', 'fontWeight': '800', 'color': '#F59E0B', 'margin': '4px 0', 'fontFamily': 'monospace'}),
                     html.Div(id="kpi-rb-sub", style={'fontSize': '12px', 'color': '#94A3B8'})
                 ]),
                 html.Div(style={'backgroundColor': '#FFFFFF', 'border': '1px solid #E2E8F0', 'borderTop': '4px solid #0284C7', 'borderRadius': '12px', 'padding': '16px 20px', 'boxShadow': '0 1px 3px rgba(0,0,0,0.04)'}, children=[
-                    html.Div("LEO Congestion", style={'fontSize': '11.5px', 'color': '#64748B', 'textTransform': 'uppercase', 'fontWeight': '700'}),
+                    html.Div("Crowded Near Earth (LEO)", style={'fontSize': '11.5px', 'color': '#64748B', 'textTransform': 'uppercase', 'fontWeight': '700'}),
                     html.Div(id="kpi-leo-val", style={'fontSize': '28px', 'fontWeight': '800', 'color': '#0284C7', 'margin': '4px 0', 'fontFamily': 'monospace'}),
                     html.Div(id="kpi-leo-sub", style={'fontSize': '12px', 'color': '#0369A1', 'fontWeight': '600'})
                 ])
@@ -1004,10 +1064,10 @@ app.layout = html.Div(
             value="tab-m",
             style={'marginBottom': '20px'},
             children=[
-                dcc.Tab(label="📊 Matplotlib Suite (M1 – M3)", value="tab-m", style=tab_style, selected_style=tab_selected_style),
-                dcc.Tab(label="📐 Seaborn Suite (S1 – S5)", value="tab-s", style=tab_style, selected_style=tab_selected_style),
-                dcc.Tab(label="🚀 Plotly Suite & Explorer (P1 – P2)", value="tab-p", style=tab_style, selected_style=tab_selected_style),
-                dcc.Tab(label="⚖️ Ethical Visualization Lab (Lie Factor)", value="tab-ethics", style=tab_style, selected_style=tab_selected_style)
+                dcc.Tab(label="📊 Charts Suite 1 (M1 – M3: Types, Years & Orbits)", value="tab-m", style=tab_style, selected_style=tab_selected_style),
+                dcc.Tab(label="📐 Charts Suite 2 (S1 – S5: Angles, Speeds & Top Countries)", value="tab-s", style=tab_style, selected_style=tab_selected_style),
+                dcc.Tab(label="🚀 Live Dot Explorer (P1 – P2: Live Dot Plot & Size Breakdown)", value="tab-p", style=tab_style, selected_style=tab_selected_style),
+                dcc.Tab(label="⚖️ Graph Honesty Lab (Misleading vs Honest Charts)", value="tab-ethics", style=tab_style, selected_style=tab_selected_style)
             ]
         ),
 
@@ -1026,7 +1086,6 @@ app.layout = html.Div(
 # 9. INTERACTIVE CALLBACKS (DYNAMIC FILTERING & PARAMETER CONTROLS)
 # ==============================================================================
 
-# Reset Filters Callback
 # Reset Filters Callback
 @app.callback(
     [Output('filter-type', 'value'),
@@ -1092,21 +1151,21 @@ def update_dashboard(tab_name, obj_type, regime, year_range, x_col, y_col, color
     leo_pct = (f_leo / f_total) * 100 if f_total > 0 else 0
     
     kpi_tot_val = f"{f_total:,}"
-    kpi_tot_sub = f"{pct_of_catalog:.1f}% of total catalog ({FULL_TOTAL:,})"
+    kpi_tot_sub = f"{pct_of_catalog:.1f}% of all objects ({FULL_TOTAL:,})"
     
     kpi_deb_val = f"{f_debris:,}"
-    kpi_deb_sub = f"{debris_pct:.1f}% junk in selection"
+    kpi_deb_sub = f"{debris_pct:.1f}% is dead trash"
     
     kpi_pay_val = f"{f_payload:,}"
-    kpi_pay_sub = f"{payload_pct:.1f}% active/retired"
+    kpi_pay_sub = f"{payload_pct:.1f}% working satellites"
     
     kpi_rb_val = f"{f_rb:,}"
-    kpi_rb_sub = f"{rb_pct:.1f}% discarded stages"
+    kpi_rb_sub = f"{rb_pct:.1f}% old rocket stages"
     
     kpi_leo_val = f"{f_leo:,}"
-    kpi_leo_sub = f"{leo_pct:.1f}% below 2,000 km altitude"
+    kpi_leo_sub = f"{leo_pct:.1f}% crowded close to Earth"
     
-    status_badge_text = f"Showing {f_total:,} of {FULL_TOTAL:,} objects ({pct_of_catalog:.1f}%)"
+    status_badge_text = f"Showing {f_total:,} of {FULL_TOTAL:,} space objects ({pct_of_catalog:.1f}%)"
     
     # 2. Render Tab Content
     if tab_name == 'tab-m':
